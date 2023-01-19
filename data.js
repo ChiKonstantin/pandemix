@@ -1,5 +1,7 @@
 import fetch from 'node-fetch';
 
+// https://health.google.com/covid-19/open-data/raw-data
+
 async function loadData() {
 	const data = await (
 		await fetch(
