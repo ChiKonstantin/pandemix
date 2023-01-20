@@ -15,19 +15,40 @@ export const setCasesDataArr = function (casesDataArr) {
 export const getCasesDataArr = function (country) {
 	return async function (dispatch) {
 		try {
-			// fentching all data
+			// FETCHING ONLY COUNTRY DATA
 			const data = await (
 				await fetch(
 					`https://storage.googleapis.com/covid19-open-data/v3/location/${country}.json`
 				)
 			).json();
-			//only keeping the 'new daiy' cases array
 			const result = data.data.map((elem) => {
 				return elem[10];
 			});
+			//FETCHING ALL DATA:
+			// const data = await(await fetch(
+			// 	`https://storage.googleapis.com/covid19-open-data/v3/latest/epidemiology.json`
+			// )).json();
+			//only keeping the 'new daiy' cases array
+			// const result = data.data.map((elem) => {
+			// 	return elem[1];
+			// });
+			// const countriesArr = result.map((elem) => {
+			// 	return elem.slice(0, 2);
+			// });
+
+			// function removeDuplicates(arr) {
+			// 	return arr.filter((item, index) => arr.indexOf(item) === index);
+			// }
 
 			console.log('TYPE OF RESULT: ', Array.isArray(result));
 			console.log('RESULT:', result);
+			// console.log('COUNTRIES ARR:', countriesArr);
+			// console.log(
+			// 	'COUNTRIES WITHOUT DUPLICATES',
+			// 	removeDuplicates(countriesArr)
+			// );
+
+			//SEND TO CONVERT TO AUDIO:
 			const response = await axios.post('/api/data-for-wav', result);
 			console.log('response from api: ', response.data);
 			//send cases data via API

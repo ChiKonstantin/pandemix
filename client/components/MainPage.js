@@ -52,6 +52,8 @@ export default function MainPage() {
 					<option value='KZ'>Kazakhstan</option>
 					<option value='IT'>Italy</option>
 					<option value='CN'>China</option>
+					<option value='RU'>Russia</option>
+					<option value='GB'>UK</option>
 				</select>
 				<button className='submit-button' type='submit'>
 					Generate Soundwave
