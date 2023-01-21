@@ -2,8 +2,11 @@ const C = require('construct-js');
 const fs = require('fs');
 const path = require('path');
 
-const generateWav = function (rawArr) {
+const generateWav = async function (casesObj) {
 	//this will be the array for wave
+	const { countryName, casesArr } = casesObj;
+	console.log('WAV IS BEING GENERATED FOR:', countryName);
+	// console.log('$$$$$$$$$$$$$$$$$$$$', casesArr);
 	//WAV FILE GENERATION:
 	const sampleRate = 8000; //max 44100 Hz
 	const riffChunkStruct = C.Struct('riffChunk')
@@ -28,6 +31,30 @@ const generateWav = function (rawArr) {
 		.field('id', C.RawString('data'))
 		.field('size', C.U32(0))
 		.field('data', C.I16s([0]));
+
+	//Mend Array
+
+	const mendArr = function (array) {
+		let mendedArr = [];
+		for (let i = 0; i < array.length; i++) {
+			if (array[i] < 0) {
+				console.log('WRONG VALUE: ', array[i]);
+			}
+			if (Number.isInteger(array[i])) {
+				mendedArr.push(array[i]);
+			} else {
+				mendedArr.push(0);
+				// console.log('&&&&&&&&&&&&', typeof array[i], ' ', array[i]);
+			}
+		}
+		// console.log('MENDED ARR: ', mendedArr);
+		return mendedArr;
+	};
+	// const mendedArray = mendArr(casesArr);
+
+	// for (let i = 0; i < mendedArray.length; i++) {
+	// 	console.log('>>>: ', mendedArray[i]);
+	// }
 
 	//Stretch Array
 	const stretchArr = function (array) {
@@ -55,19 +82,29 @@ const generateWav = function (rawArr) {
 		console.log('MAX value', Math.max(...array));
 		const maxData = Math.max(...array);
 		const maxAmplitude = 30000; //actually 32767, conservitavely use 30K
-		const compFactor = Math.round(maxData / maxAmplitude);
+		const compFactor = maxData / maxAmplitude;
 		console.log('Length: ', array.length);
 		for (let i = 0; i < array.length; i++) {
 			const value = Math.round(array[i] / compFactor);
 			compressedArr.push(value);
 		}
 		return compressedArr;
+		// return array;
 	};
 
 	//Loop array
-	const loopArr = function () {};
+	const loopArr = function (array) {
+		const loopNumber = 4;
+		const loopedArr = [];
+		for (let j = 0; j < loopNumber; j++) {
+			for (let i = 0; i < array.length; i++) {
+				loopedArr.push(array[i]);
+			}
+		}
+		return loopedArr;
+	};
 
-	const soundData = compressArr(stretchArr(rawArr));
+	const soundData = loopArr(compressArr(stretchArr(mendArr(casesArr))));
 	// let isUp = true;
 	// for (let i = 0; i < 44100; i++) {
 	// 	if (i % 50 === 0) {
@@ -85,8 +122,8 @@ const generateWav = function (rawArr) {
 		.field('fmtSubChunk', fmtSubChunkStruct)
 		.field('dataSubChunk', dataSubChunkStruct);
 
-	fs.writeFileSync(
-		path.join(__dirname, '../public/pandemic.wav'),
+	await fs.writeFileSync(
+		path.join(__dirname, `../sound_files/${countryName}_pandemic_beat.wav`),
 		fileStruct.toUint8Array()
 	);
 };

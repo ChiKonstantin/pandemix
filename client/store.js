@@ -12,7 +12,7 @@ export const setCasesDataArr = function (casesDataArr) {
 	};
 };
 
-export const getCasesDataArr = function (country) {
+export const makeCountryCasesObj = function (country) {
 	return async function (dispatch) {
 		try {
 			// FETCHING ONLY COUNTRY DATA
@@ -24,11 +24,22 @@ export const getCasesDataArr = function (country) {
 			const result = data.data.map((elem) => {
 				return elem[10];
 			});
+			console.log('RESULT FROM MAKE COUNTRY OBJ: ', result);
+			const countryDataObj = {
+				countryName: country,
+				casesArr: result,
+			};
+			console.log('Generated country data obj for ', country);
+			console.log('COUNTRY DATA OBJ:', countryDataObj);
+			return countryDataObj;
+
 			//FETCHING ALL DATA:
-			// const data = await(await fetch(
-			// 	`https://storage.googleapis.com/covid19-open-data/v3/latest/epidemiology.json`
-			// )).json();
-			//only keeping the 'new daiy' cases array
+			// const data = await (
+			// 	await fetch(
+			// 		`https://storage.googleapis.com/covid19-open-data/v3/latest/epidemiology.json`
+			// 	)
+			// ).json();
+			// // only keeping the 'new daily cases' array
 			// const result = data.data.map((elem) => {
 			// 	return elem[1];
 			// });
@@ -40,8 +51,8 @@ export const getCasesDataArr = function (country) {
 			// 	return arr.filter((item, index) => arr.indexOf(item) === index);
 			// }
 
-			console.log('TYPE OF RESULT: ', Array.isArray(result));
-			console.log('RESULT:', result);
+			// console.log('TYPE OF RESULT: ', Array.isArray(result));
+			// console.log('RESULT:', result);
 			// console.log('COUNTRIES ARR:', countriesArr);
 			// console.log(
 			// 	'COUNTRIES WITHOUT DUPLICATES',
@@ -49,8 +60,8 @@ export const getCasesDataArr = function (country) {
 			// );
 
 			//SEND TO CONVERT TO AUDIO:
-			const response = await axios.post('/api/data-for-wav', result);
-			console.log('response from api: ', response.data);
+			// const response = await axios.post('/api/data-for-wav', result);
+			// console.log('response from api: ', response.data);
 			//send cases data via API
 			// dispatch(setCasesDataArr([1, 2, 3, 4, 5]));
 		} catch (error) {

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { getCasesDataArr } from '../store';
+import { makeCountryCasesObj } from '../store';
+import { countriesArr } from '../countries';
+import axios from 'axios';
 
 import { useSelector, useDispatch } from 'react-redux';
 // import sound from './new.wav';
@@ -20,10 +22,21 @@ export default function MainPage() {
 		console.log(event.target.value);
 	};
 
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault();
-		dispatch(getCasesDataArr(values.selectCountry));
-		console.log('Submit', values.selectCountry);
+		let allCountriesCasesArr = [];
+		for (let i = 0; i < countriesArr.length; i++) {
+			const obj = await dispatch(makeCountryCasesObj(countriesArr[i]));
+			allCountriesCasesArr.push(obj);
+		}
+		console.log('ALL COUNTRIES CASES: ', allCountriesCasesArr);
+		const response = await axios.post(
+			'/api/data-for-wav',
+			allCountriesCasesArr
+		);
+		console.log('response from api: ', response.data);
+		// dispatch(getCasesDataArr(values.selectCountry));
+		// console.log('Submit', values.selectCountry);
 	};
 
 	const playAudio = () => {
@@ -40,7 +53,7 @@ export default function MainPage() {
 				key='join-form'
 				autoComplete='off'
 			>
-				<select
+				{/* <select
 					name='selectCountry'
 					value={values.selectCountry || ''}
 					onChange={handleChange}
@@ -54,7 +67,7 @@ export default function MainPage() {
 					<option value='CN'>China</option>
 					<option value='RU'>Russia</option>
 					<option value='GB'>UK</option>
-				</select>
+				</select> */}
 				<button className='submit-button' type='submit'>
 					Generate Soundwave
 				</button>
